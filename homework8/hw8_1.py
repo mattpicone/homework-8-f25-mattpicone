@@ -104,8 +104,7 @@ def top_N_common(filename, N, n, threshold=0):
 
     # 3. get the top N common n-grams from the sorted dict and return it
     #   fill in
-    sorted_items = sorted(filtered_dict.items(), key=lambda item: item[1], reverse=True)
-    sorted_items = sorted(sorted_items, key=lambda item: item[0], reverse=True)
+    sorted_items = sorted(filtered_dict.items(), key=lambda x: (-x[1], x[0]))
 
     top_n_grams = {}
     for i in range(min(N, len(sorted_items))):
