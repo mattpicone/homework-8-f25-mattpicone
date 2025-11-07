@@ -60,11 +60,21 @@ def get_dict(filename, n):
     # 1. get lines and combine them to a set of keys
     #   fill in
 
+    lines = get_formatted_text(filename)
+    all_ngrams = []
+    for x in lines:
+        all_ngrams.extend(get_ngrams(x, n))
+    keys = set(all_ngrams)
+
     # 2. use the set to initialize a dict
     #   fill in
+    for key in keys:
+        ngram_dict[key] = 0
 
     # 3. update the values of the dict
     #   fill in
+    for gram in all_ngrams:
+        ngram_dict[gram] = ngram_dict[gram] + 1
 
     return ngram_dict
 
@@ -83,13 +93,24 @@ def top_N_common(filename, N, n, threshold=0):
     top_n_grams = None
     # 1. get a dict
     # fill in
+    ngram_dict = get_dict(filename,n)
 
     # 2. sort the dict
     # fill in
+    filtered_dict = {}
+    for key in ngram_dict:
+        if ngram_dict[key] >= threshold:
+            filtered_dict[key] = ngram_dict[key]
 
     # 3. get the top N common n-grams from the sorted dict and return it
     #   fill in
+    sorted_items = sorted(filtered_dict.items(), key=lambda item: item[1], reverse=True)
+    sorted_items = sorted(sorted_items, key=lambda item: item[0], reverse=True)
 
+    top_n_grams = {}
+    for i in range(min(N, len(sorted_items))):
+        key, value = sorted_items[i]
+        top_n_grams[key] = value
 
     return top_n_grams
 
@@ -134,9 +155,16 @@ def dict_union(listOfDicts):
 
     # 1. update the set by using union_ngrams.update()
     # fill in
+    union_set = set()
+
+    for x in listOfDicts:
+        union_set.update(x.keys())
+
 
     # 2. convert the set into a list and then sort
     # fill in
+    union_ngrams = list(union_set)
+    union_ngrams.sort()
 
     return union_ngrams
 
@@ -177,9 +205,21 @@ def compare_langs(test_file, langFiles, N, n=3):
 
     # 1. get mystery top N using 'top_N_common' function
     # fill in
+    mystery_dict = top_N_common(test_file,N,n)
+    mystery_set = set(mystery_dict.keys())
+
 
     # 2. cardinalities of intersections, use 'intersection()' and 'top_N_common' function
     # fill in
+    best = 0
+
+    for lang in langFiles:
+        lang_set = set(top_N_common(lang,N,n).keys())
+        overlap = len(mystery_set.intersection(lang_set))
+
+        if overlap > best:
+            best = overlap
+            lang_match = lang
 
     return lang_match # this variable is a string
 

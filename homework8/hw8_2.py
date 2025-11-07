@@ -55,11 +55,41 @@ def build_doc_word_matrix(doclist, n, normalize=False):
     # TODO: complete the function
     docword, ngramlist = None, None
     # 1. Create the cleaned string for each doc (use read_and_clean_doc)
+    cleaned_docs = []
+    for doc in doclist:
+        clean_text = read_and_clean_doc(doc)
+        cleaned_docs.append(clean_text)
+
 
 
     # 2. Create and use ngram lists to build the doc word matrix
+    doc_dicts = []
+    for text in cleaned_docs:
+        grams = get_ngrams(text,n)
+        gram_dict = {}
 
+        for x in grams:
+            if x in gram_dict:
+                gram_dict[x] = gram_dict[x] + 1
+            else:
+                gram_dict[x] = 1
+        doc_dicts.append(gram_dict)
 
+    ngramlist = sorted(set().union(*[d.keys() for d in doc_dicts]))
+
+    docword = np.zeros((len(doclist),len(ngramlist)))
+
+    for i in range(len(doc_dicts)):
+        for j in range(len(ngramlist)):
+            key = ngramlist[j]
+            if key in doc_dicts[i]:
+                docword[i][j] = doc_dicts[i][key]
+
+    if normalize:
+        for i in range(len(doclist)):
+            total = np.sum(docword[i])
+            if total > 0:
+                docword[i] = np.round(docword[i]/total,4)
 
     return docword, ngramlist
 
@@ -76,8 +106,10 @@ def build_tf_matrix(docword):
     '''
     tf = None
     # TODO: fill in
-
-
+    tf = docword.astype(float)
+    row_sum = tf.sum(axis=1, keepdims=True)
+    row_sum[row_sum == 0] = 1
+    tf = tf / row_sum
     
     return tf
 
@@ -96,8 +128,9 @@ def build_idf_matrix(docword):
     '''
     idf = None
     # TODO: fill in
-
-
+    num_docs = docword.shape[0]
+    df = np.count_nonzero(docword,axis=0)
+    idf = np.log10(num_docs / (df + 1))
 
     return idf
 
@@ -113,6 +146,10 @@ def build_tfidf_matrix(docword):
     '''
     tfidf = None
     #TODO: fill in
+    tf = build_tf_matrix(docword)
+    idf = build_idf_matrix(docword)
+    tfidf = tf * idf
+
     return tfidf
 
 
@@ -132,8 +169,13 @@ def find_distinctive_ngrams(docword, ngramlist, doclist):
     # you might find numpy.argsort helpful for solving this problem:
     # https://docs.scipy.org/doc/numpy/reference/generated/numpy.argsort.html
     # HINT: the smallest three of the negative of docword correspond to largest 3 of docword
+    distinctive_words = {}
+    tfidf = build_tfidf_matrix(docword)
 
-
+    for i in range(tfidf.shape[0]):
+        top_indices = np.argsort(-tfidf[i][:3])
+        top_ngrams = [ngramlist[j] for j in top_indices]
+        distinctive_words[doclist[i]] = top_ngrams
 
     return distinctive_words
 
