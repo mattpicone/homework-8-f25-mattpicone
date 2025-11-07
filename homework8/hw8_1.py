@@ -237,13 +237,13 @@ if __name__ == "__main__":
     print("\n")
     # Uncomment the following 6 lines to test dict_union and get_all_ngrams
     # Compiling ngrams across all 7 languages (mystery is excluded) and finding the most similar language to mystery
-    # path = "ngrams"
-    # file_list = [f for f in listdir(path) if isfile(join(path, f))]
-    # file_list.remove("mystery.txt")
-    # path_list = [join(path, f) for f in file_list]
-    # print(get_all_ngrams(path_list, 4)[:50])  # list of all 4-grams spanning all languages
+    path = "ngrams"
+    file_list = [f for f in listdir(path) if isfile(join(path, f))]
+    file_list.remove("mystery.txt")
+    path_list = [join(path, f) for f in file_list]
+    print(get_all_ngrams(path_list, 4)[:50])  # list of all 4-grams spanning all languages
 
     # Find the similarity between languages all the languages and the mystery file
     # Uncomment the statements below to test compare_langs
-    # test_file = join(path, "mystery.txt")
-    # print(compare_langs(test_file, path_list, 20))  # determine language of mystery file
+    test_file = join(path, "mystery.txt")
+    print(compare_langs(test_file, path_list, 20))  # determine language of mystery file

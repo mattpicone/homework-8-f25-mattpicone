@@ -130,7 +130,7 @@ def build_idf_matrix(docword):
     # TODO: fill in
     num_docs = docword.shape[0]
     df = np.count_nonzero(docword,axis=0)
-    idf = np.log10(num_docs / (df + 1))
+    idf = np.log10(num_docs / (df + 1)).reshape(1,-1)
 
     return idf
 
@@ -173,7 +173,7 @@ def find_distinctive_ngrams(docword, ngramlist, doclist):
     tfidf = build_tfidf_matrix(docword)
 
     for i in range(tfidf.shape[0]):
-        top_indices = np.argsort(-tfidf[i][:3])
+        top_indices = np.argsort(-tfidf[i])[3:]
         top_ngrams = [ngramlist[j] for j in top_indices]
         distinctive_words[doclist[i]] = top_ngrams
 
@@ -189,7 +189,7 @@ if __name__ == "__main__":
     path1 = join(directory, "1_vidText.txt")
     path2 = join(directory, "2_vidText.txt")
 
-    print("\n*** Testing build_doc_word_matrix ***") 
+    print("\n*** Testing build_doc_word_matrix ***")
     doclist =[path1, path2]
     docword, wordlist = build_doc_word_matrix(doclist, 4)
     print(docword.shape)
@@ -197,7 +197,7 @@ if __name__ == "__main__":
     print(docword[0][0:10])
     print(wordlist[0:10])
     print(docword[1][0:10])
-    print("\n*** Testing build_doc_word_matrix normalization ***") 
+    print("\n*** Testing build_doc_word_matrix normalization ***")
     doclist =[path1, path2]
     docword, wordlist = build_doc_word_matrix(doclist, 4, normalize=True)
     print(docword.shape)
@@ -207,20 +207,20 @@ if __name__ == "__main__":
     print(docword[1][0:10])
 
     # Uncomment the following code block to test build_tf_matrix, builf_idf_matrix, and build_tfidf_matrix
-    # print("\n*** Testing build_tf_matrix ***")
-    # tf = build_tf_matrix(docword)
-    # print(tf[0][0:10])
-    # print(tf[1][0:10])
-    # print(tf.sum(axis=1))
-    # print("\n*** Testing build_idf_matrix ***")
-    # idf = build_idf_matrix(docword)
-    # print(idf[0][0:10])
-    # print("\n*** Testing build_tfidf_matrix ***")
-    # tfidf = build_tfidf_matrix(docword)
-    # print(tfidf.shape)
-    # print(tfidf[0][0:10])
-    # print(tfidf[1][0:10])
+    print("\n*** Testing build_tf_matrix ***")
+    tf = build_tf_matrix(docword)
+    print(tf[0][0:10])
+    print(tf[1][0:10])
+    print(tf.sum(axis=1))
+    print("\n*** Testing build_idf_matrix ***")
+    idf = build_idf_matrix(docword)
+    print(idf[0][0:10])
+    print("\n*** Testing build_tfidf_matrix ***")
+    tfidf = build_tfidf_matrix(docword)
+    print(tfidf.shape)
+    print(tfidf[0][0:10])
+    print(tfidf[1][0:10])
 
     # Uncomment the following code block to test find_distinctive_ngrams
-    # print("\n*** Testing find_distinctive_words ***")
-    # print(find_distinctive_ngrams(docword, wordlist, doclist))
+    print("\n*** Testing find_distinctive_words ***")
+    print(find_distinctive_ngrams(docword, wordlist, doclist))
